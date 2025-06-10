@@ -45,6 +45,10 @@
 #  include "MDIEngine.h"
 #endif
 
+#if defined(DFTFE_WITH_MIMIC)
+#  include <mcl.h>
+#endif
+
 int
 main(int argc, char *argv[])
 {
@@ -89,10 +93,16 @@ main(int argc, char *argv[])
   dftfe::dftfeWrapper::globalHandlesFinalize();
   MPI_Barrier(mpi_world_comm);
 #else
-  dftfe::dftfeWrapper::globalHandlesInitialize(MPI_COMM_WORLD);
+  MPI_Comm MPI_WORLD_STUB = MPI_COMM_WORLD;
+  dftfe::dftfeWrapper::globalHandlesInitialize(MPI_WORLD_STUB);
   const double start = MPI_Wtime();
   int          world_rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+  MPI_Comm_rank(MPI_WORLD_STUB, &world_rank);
+
+#if DFTFE_WITH_MIMIC
+  MCL_Initialize(&MPI_WORLD_STUB);
+#endif
+
 
   // deal.II tests expect parameter file as a first (!) argument
   AssertThrow(argc > 1,
@@ -208,7 +218,7 @@ main(int argc, char *argv[])
     {
       dftfe::molecularDynamicsClass mdClass(parameter_file,
                                             runParams.restartFilesPath,
-                                            MPI_COMM_WORLD,
+                                            MPI_WORLD_STUB,
                                             runParams.restart,
                                             runParams.verbosity,
                                             runParams.useDevice);
@@ -221,7 +231,7 @@ main(int argc, char *argv[])
       dftfe::nudgedElasticBandClass nebClass(
         parameter_file,
         runParams.restartFilesPath,
-        MPI_COMM_WORLD,
+        MPI_WORLD_STUB,
         runParams.restart,
         runParams.verbosity,
         runParams.useDevice,
@@ -246,16 +256,24 @@ main(int argc, char *argv[])
     {
       dftfe::geometryOptimizationClass geoOpt(parameter_file,
                                               runParams.restartFilesPath,
-                                              MPI_COMM_WORLD,
+                                              MPI_WORLD_STUB,
                                               runParams.restart,
                                               runParams.verbosity,
                                               runParams.useDevice);
       geoOpt.runOpt();
     }
+   else if (runParams.solvermode == "MiMiC")
+    {
+	   std::cout << "MiMiC interface not implemented" << std::endl;
+       #dftfe::MiMiCClass mimicHndl(parameter_file,
+                                   runParams.verbosity,
+                                   runParams.useDevice);
+       #mimicHndl.runMiMiCClient();
+     }
   else if (runParams.solvermode == "NONE")
     {
       dftfe::dftfeWrapper dftfeWrapped(parameter_file,
-                                       MPI_COMM_WORLD,
+                                       MPI_WORLD_STUB,
                                        true,
                                        true,
                                        "NONE",
@@ -267,7 +285,7 @@ main(int argc, char *argv[])
   else if (runParams.solvermode == "NSCF")
     {
       dftfe::dftfeWrapper dftfeWrapped(parameter_file,
-                                       MPI_COMM_WORLD,
+                                       MPI_WORLD_STUB,
                                        true,
                                        true,
                                        "NSCF",
@@ -279,7 +297,7 @@ main(int argc, char *argv[])
   else if (runParams.solvermode == "BANDS")
     {
       dftfe::dftfeWrapper dftfeWrapped(parameter_file,
-                                       MPI_COMM_WORLD,
+                                       MPI_WORLD_STUB,
                                        true,
                                        true,
                                        "BANDS",
@@ -291,7 +309,7 @@ main(int argc, char *argv[])
   else if (runParams.solvermode == "FUNCTIONAL_TEST")
     {
       dftfe::dftfeWrapper dftfeWrapped(parameter_file,
-                                       MPI_COMM_WORLD,
+                                       MPI_WORLD_STUB,
                                        true,
                                        true,
                                        "FUNCTIONAL_TEST",
@@ -303,7 +321,7 @@ main(int argc, char *argv[])
   else
     {
       dftfe::dftfeWrapper dftfeWrapped(parameter_file,
-                                       MPI_COMM_WORLD,
+                                       MPI_WORLD_STUB,
                                        true,
                                        true,
                                        "GS",
@@ -329,7 +347,7 @@ main(int argc, char *argv[])
     }
 
   dftfe::dftfeWrapper::globalHandlesFinalize();
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(MPI_WORLD_STUB);
 #endif
   MPI_Finalize();
   return 0;
