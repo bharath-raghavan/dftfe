@@ -265,10 +265,10 @@ main(int argc, char *argv[])
    else if (runParams.solvermode == "MiMiC")
     {
 	   std::cout << "MiMiC interface not implemented" << std::endl;
-       #dftfe::MiMiCClass mimicHndl(parameter_file,
-                                   runParams.verbosity,
-                                   runParams.useDevice);
-       #mimicHndl.runMiMiCClient();
+       //dftfe::MiMiCClass mimicHndl(parameter_file,
+       //                            runParams.verbosity,
+       //                            runParams.useDevice);
+       //mimicHndl.runMiMiCClient();
      }
   else if (runParams.solvermode == "NONE")
     {
