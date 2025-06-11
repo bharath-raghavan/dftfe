@@ -262,7 +262,7 @@ main(int argc, char *argv[])
                                               runParams.useDevice);
       geoOpt.runOpt();
     }
-   else if (runParams.solvermode == "MiMiC")
+   else if (runParams.solvermode == "MIMIC")
     {
 	   std::cout << "MiMiC interface not implemented" << std::endl;
        //dftfe::MiMiCClass mimicHndl(parameter_file,
