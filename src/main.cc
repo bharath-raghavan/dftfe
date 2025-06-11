@@ -26,6 +26,7 @@
 #include "molecularDynamicsClass.h"
 #include "nudgedElasticBandClass.h"
 #include "geometryOptimizationClass.h"
+#include "mimicRunClass.h"
 #include <git_info.h>
 
 #include <dftUtils.h>
@@ -264,11 +265,12 @@ main(int argc, char *argv[])
     }
    else if (runParams.solvermode == "MIMIC")
     {
-	   std::cout << "MiMiC interface not implemented" << std::endl;
-       //dftfe::MiMiCClass mimicHndl(parameter_file,
-       //                            runParams.verbosity,
-       //                            runParams.useDevice);
-       //mimicHndl.runMiMiCClient();
+       dftfe::mimicRunClass mimicHndl(parameter_file,
+                                              runParams.restartFilesPath,
+                                              MPI_WORLD_STUB,
+                                              runParams.verbosity,
+                                              runParams.useDevice);
+       mimicHndl.runClient();
      }
   else if (runParams.solvermode == "NONE")
     {

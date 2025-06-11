@@ -162,6 +162,8 @@ SET(TARGET_SRC
   ./src/dft/dftd.cc
   ./src/mdi/MDIEngine.cpp
   ./src/mdi/libraryMDI.cpp
+  ./src/mimic/mimicCommunicator.cc
+  ./src/mimic/mimicRunClass.cc
   ./src/dft/atomicRho.cc
   ./src/dft/charge.cc
   ./src/dft/density.cc
