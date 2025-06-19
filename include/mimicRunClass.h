@@ -23,8 +23,6 @@
 #include "headers.h"
 #include "dftBase.h"
 #include "dftfeWrapper.h"
-#include <geoOptCell.h>
-#include <geoOptIon.h>
 
 namespace dftfe
 {
@@ -59,9 +57,8 @@ namespace dftfe
   private:
     // pointers to dft class and optimization classes
     std::unique_ptr<dftfeWrapper> d_dftfeWrapper;
-    dftBase                      *d_dftPtr;
 	
-	const std::string d_restartFilesPath;
+    const std::string d_restartFilesPath;
     const dftfe::Int  d_verbosity;
     // status parameters
     dftfe::Int d_status, d_cycle, d_optMode;

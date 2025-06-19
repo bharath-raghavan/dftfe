@@ -21,7 +21,11 @@
 #  include <mcl.h>
 #endif
 
-#include "mimicCommunicator.h"
+#include <TypeConfig.h>
+#include <constants.h>
+#include <headers.h>
+#include <dftBase.h>
+#include <mimicCommunicator.h>
 
 #if !defined(DFTFE_WITH_MIMIC)
 /// Called in case DFT-FE is compiled without MiMiC
@@ -43,6 +47,12 @@ static void MCL_Finalize()
 
 namespace dftfe
 {
+  void
+  mimicCommunicator::setPtr(dftBase *dftPtr, dftParameters *dftParamsPtr)
+  {
+    d_dftPtr       = dftPtr;
+    d_dftParamsPtr = dftParamsPtr;
+  }
 
   void
   mimicCommunicator::finalize()
@@ -53,19 +63,34 @@ namespace dftfe
   int
   mimicCommunicator::getRequest()
   {
-	  int request;
+      int request;
       MCL_Receive(&request, 1, MCL_REQUEST, 0);
       return request;
   }
 
   void
-  mimicCommunicator::sendClientId()
+  mimicCommunicator::sendValue(mimicValue option)
   {
-      int id;
-      id = MCL_GetProgramID();
-      MCL_Send(&id, 1, MCL_DATA, 0);
+      int value = 0;
+	  switch (option) {
+	      case mimicValue::ID:
+	          value = MCL_GetProgramID();
+	          break;
+	      case mimicValue::RunType:
+	          value = MCL_RUNTYPE_QM_PW;
+	          break;
+	      case mimicValue::NAtoms:
+	          value = (dftfe::Int) d_dftParamsPtr->natoms;
+	          break;
+	      case mimicValue::NAtomTypes:
+	          value = (dftfe::Int) d_dftParamsPtr->natomTypes;
+	          break;
+		  default:
+	          std::cout << "Not recognized" << std::endl;
+	  }
+	  MCL_Send(&value, 1, MCL_DATA, 0);
   }
-
+  
   void
   mimicCommunicator::sendClientProgramName()
   {
@@ -74,12 +99,6 @@ namespace dftfe
       MCL_Send(&length, 1, MCL_LENGTH, 0);
       MCL_Send(client_name.data(), length, MCL_DATA, 0);
   }
-
-  void
-  mimicCommunicator::sendClientRunType()
-  {
-      int clientRunTypeLabel = MCL_RUNTYPE_QM_PW;
-      MCL_Send(&clientRunTypeLabel, 1, MCL_DATA, 0);
-  }
+  
 
 } // namespace dftfe

@@ -19,15 +19,14 @@
 
 #ifndef mimicCommunicator_H_
 #define mimicCommunicator_H_
-#include "constants.h"
-#include "headers.h"
-#include "dftBase.h"
-#include "dftfeWrapper.h"
-#include <geoOptCell.h>
-#include <geoOptIon.h>
+#include <constants.h>
+#include <headers.h>
+#include <dftBase.h>
 
 namespace dftfe
 {
+    enum class mimicValue{ ID, RunType, NAtoms, NAtomTypes};
+	
 	class mimicCommunicator
 	{
 
@@ -35,7 +34,7 @@ namespace dftfe
 	    /*! \brief
 	     * Initializes the communicator
 	     */
-	    void init();
+	    void setPtr(dftBase *dftPtr, dftParameters *dftParamsPtr);
 
 	    /*! \brief
 	     * Finish communications and disconnect from the server
@@ -44,17 +43,14 @@ namespace dftfe
 
 	    int getRequest();
 
-	    // cAA
-	    void sendClientId();
+	    void sendValue(mimicValue option);
 
-	    // cAA
 	    void sendClientProgramName();
-    
-	    /*! \brief
-	     * Sends a label that identifies GMX as an MM client
-	     */
-	    void sendClientRunType();
-    
+	
+	private:
+	    dftBase                      *d_dftPtr;
+            dftParameters                *d_dftParamsPtr;
+		
 	};
 
 } // namespace dftfe

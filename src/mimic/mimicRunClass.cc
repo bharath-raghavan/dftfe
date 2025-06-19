@@ -51,7 +51,6 @@ namespace dftfe
   mimicRunClass::init(const std::string parameter_file,
                                   const bool        useDevice)
   {
-  	pcout << "Init started" << std::endl;
     d_dftfeWrapper = std::make_unique<dftfeWrapper>(parameter_file,
                                                     d_mpiCommParent,
                                                     true,
@@ -60,29 +59,30 @@ namespace dftfe
                                                     d_restartFilesPath,
                                                     d_verbosity,
                                                     useDevice);
-	pcout << "Init done" << std::endl;
   }
+
 
 
   void
   mimicRunClass::runClient()
   {
     bool                             isLastStep = false;
-	mimicCommunicator mimic_Communicator{};
-	pcout << "Starting client" << std::endl;
-	while (!isLastStep)
+    mimicCommunicator mimic_Communicator{};
+    mimic_Communicator.setPtr(d_dftfeWrapper->getDftfeBasePtr(), d_dftfeWrapper->getDftfeParamsPtr());
+    pcout << "Starting client" << std::endl;
+    while (!isLastStep)
     {
         int request = -1;
         request =  mimic_Communicator.getRequest();
-		MPI_Bcast(&request, sizeof(int), MPI_BYTE, 0, d_mpiCommParent);
-		std::cout << "MiMiC command name: " << MCL_GetRequestName(request) << " and number: " << request << std::endl;
+	MPI_Bcast(&request, sizeof(int), MPI_BYTE, 0, d_mpiCommParent);
+	std::cout << "MiMiC command name: " << MCL_GetRequestName(request) << " and number: " << request << std::endl;
         if (request == MCL_EXIT)
         {
             isLastStep = true;
         }
         else if (request == MCL_SEND_CLIENT_ID)
         {
-             mimic_Communicator.sendClientId();
+             mimic_Communicator.sendValue(mimicValue::ID);
         }
         else if (request == MCL_SEND_CLIENT_NAME)
         {
@@ -90,8 +90,18 @@ namespace dftfe
         }
         else if (request == MCL_SEND_CLIENT_RUNTYPE)
         {
-             mimic_Communicator.sendClientRunType();
+             mimic_Communicator.sendValue(mimicValue::RunType);
         }
+		else if (request == MCL_SEND_NUM_PARTICLES)
+        {
+            mimic_Communicator.sendValue(mimicValue::NAtoms);
+        }
+		else if (request == MCL_SEND_NUM_PARTICLE_SPECIES)
+        {
+            mimic_Communicator.sendValue(mimicValue::NAtomTypes);
+        }
+		
+		
 	}
     
   }
