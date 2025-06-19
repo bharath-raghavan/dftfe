@@ -59,10 +59,9 @@ namespace dftfe
   private:
     // pointers to dft class and optimization classes
     std::unique_ptr<dftfeWrapper> d_dftfeWrapper;
-    std::unique_ptr<geoOptIon>    d_geoOptIonPtr;
-    std::unique_ptr<geoOptCell>   d_geoOptCellPtr;
     dftBase                      *d_dftPtr;
-
+	
+	const std::string d_restartFilesPath;
     const dftfe::Int  d_verbosity;
     // status parameters
     dftfe::Int d_status, d_cycle, d_optMode;

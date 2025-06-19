@@ -69,7 +69,7 @@ namespace dftfe
   void
   mimicCommunicator::sendClientProgramName()
   {
-      std::string client_name = "GROMACS";
+      std::string client_name = "DFTFE";
       int length = client_name.length();
       MCL_Send(&length, 1, MCL_LENGTH, 0);
       MCL_Send(client_name.data(), length, MCL_DATA, 0);
@@ -78,7 +78,7 @@ namespace dftfe
   void
   mimicCommunicator::sendClientRunType()
   {
-      int clientRunTypeLabel = MCL_RUNTYPE_MM;
+      int clientRunTypeLabel = MCL_RUNTYPE_QM_PW;
       MCL_Send(&clientRunTypeLabel, 1, MCL_DATA, 0);
   }
 

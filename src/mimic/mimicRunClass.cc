@@ -41,6 +41,7 @@ namespace dftfe
     : d_mpiCommParent(mpi_comm_parent)
     , pcout(std::cout,
             (dealii::Utilities::MPI::this_mpi_process(mpi_comm_parent) == 0))
+	, d_restartFilesPath(restartFilesPath)
     , d_verbosity(verbosity)
   {
     init(parameter_file, useDevice);
@@ -50,42 +51,16 @@ namespace dftfe
   mimicRunClass::init(const std::string parameter_file,
                                   const bool        useDevice)
   {
-    /*d_dftfeWrapper = std::make_unique<dftfeWrapper>(parameter_file,
+  	pcout << "Init started" << std::endl;
+    d_dftfeWrapper = std::make_unique<dftfeWrapper>(parameter_file,
                                                     d_mpiCommParent,
                                                     true,
                                                     true,
-                                                    "GEOOPT",
+                                                    "GS",
                                                     d_restartFilesPath,
                                                     d_verbosity,
                                                     useDevice);
-    d_dftPtr       = d_dftfeWrapper->getDftfeBasePtr();
-    if (d_dftPtr->getParametersObject().optimizationMode == "ION")
-      d_optMode = 0;
-    else if (d_dftPtr->getParametersObject().optimizationMode == "CELL")
-      d_optMode = 1;
-    else if (d_dftPtr->getParametersObject().optimizationMode == "IONCELL")
-      d_optMode = 2;
-    if (dealii::Utilities::MPI::this_mpi_process(d_mpiCommParent) == 0)
-      mkdir((d_restartFilesPath + "/optRestart").c_str(), ACCESSPERMS);
-    std::vector<std::vector<double>> optData(2,
-                                             std::vector<double>(1, 0.0));
-    optData[0][0] = d_optMode;
-    optData[1][0] = d_dftPtr->getParametersObject().periodicX ||
-                        d_dftPtr->getParametersObject().periodicY ||
-                        d_dftPtr->getParametersObject().periodicZ ?
-                      1 :
-                      0;
-    if (!d_dftPtr->getParametersObject().reproducible_output)
-      dftUtils::writeDataIntoFile(optData,
-                                  d_restartFilesPath +
-                                    "/optRestart/geometryOptimization.dat",
-                                  d_mpiCommParent);
-    d_cycle  = 0;
-    d_status = d_optMode == 1 ? 1 : 0;
-    d_geoOptIonPtr =
-      std::make_unique<geoOptIon>(d_dftPtr, d_mpiCommParent, d_isRestart);
-    d_geoOptCellPtr =
-      std::make_unique<geoOptCell>(d_dftPtr, d_mpiCommParent, d_isRestart);*/
+	pcout << "Init done" << std::endl;
   }
 
 
@@ -94,11 +69,13 @@ namespace dftfe
   {
     bool                             isLastStep = false;
 	mimicCommunicator mimic_Communicator{};
+	pcout << "Starting client" << std::endl;
 	while (!isLastStep)
     {
         int request = -1;
         request =  mimic_Communicator.getRequest();
-		std::cout << request << std::endl;
+		MPI_Bcast(&request, sizeof(int), MPI_BYTE, 0, d_mpiCommParent);
+		std::cout << "MiMiC command name: " << MCL_GetRequestName(request) << " and number: " << request << std::endl;
         if (request == MCL_EXIT)
         {
             isLastStep = true;
