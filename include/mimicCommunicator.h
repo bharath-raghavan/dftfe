@@ -22,7 +22,6 @@
 #include <constants.h>
 #include <headers.h>
 #include <dftBase.h>
-#include "dftfeWrapper.h"
 
 namespace dftfe
 {
@@ -39,6 +38,8 @@ namespace dftfe
 	    int getRequest();
 
 	    void sendInt(int value);
+		
+		void sendVec(std::vector<dftfe::Int> value);
 
 	    void sendClientProgramName();
 		

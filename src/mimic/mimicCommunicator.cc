@@ -26,7 +26,6 @@
 #include <headers.h>
 #include <dftBase.h>
 #include <mimicCommunicator.h>
-#include "dftfeWrapper.h"
 
 #if !defined(DFTFE_WITH_MIMIC)
 /// Called in case DFT-FE is compiled without MiMiC
@@ -68,6 +67,16 @@ namespace dftfe
   {
 	  MCL_Send(&value, 1, MCL_DATA, 0);
   }
+  
+  void mimicCommunicator::sendVec(std::vector<dftfe::Int> value) {
+	  for (const auto& num : value) {
+	          std::cout << num << " ";
+	      }
+	      std::cout << std::endl;
+	  std::vector<int> value_(begin(value), end(value));
+      MCL_Send(value_.data(), value_.size(), MCL_DATA, 0);
+  }
+  
 
   void
   mimicCommunicator::sendClientProgramName()

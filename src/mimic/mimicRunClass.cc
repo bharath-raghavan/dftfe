@@ -102,6 +102,10 @@ namespace dftfe
         {
             mimic_Communicator.sendInt((int) d_dftParamsPtr->natomTypes);
         }
+		else if (request == MCL_SEND_SPECIES_ELEMENTS)
+        {
+            mimic_Communicator.sendVec(d_dftfeWrapper->getAtomicNumbers());
+        }
 		
 		
 	}
