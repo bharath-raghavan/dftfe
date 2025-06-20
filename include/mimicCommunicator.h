@@ -22,20 +22,15 @@
 #include <constants.h>
 #include <headers.h>
 #include <dftBase.h>
+#include "dftfeWrapper.h"
 
 namespace dftfe
 {
-    enum class mimicValue{ ID, RunType, NAtoms, NAtomTypes};
 	
 	class mimicCommunicator
 	{
 
 	public:
-	    /*! \brief
-	     * Initializes the communicator
-	     */
-	    void setPtr(dftBase *dftPtr, dftParameters *dftParamsPtr);
-
 	    /*! \brief
 	     * Finish communications and disconnect from the server
 	     */
@@ -43,13 +38,9 @@ namespace dftfe
 
 	    int getRequest();
 
-	    void sendValue(mimicValue option);
+	    void sendInt(int value);
 
 	    void sendClientProgramName();
-	
-	private:
-	    dftBase                      *d_dftPtr;
-            dftParameters                *d_dftParamsPtr;
 		
 	};
 

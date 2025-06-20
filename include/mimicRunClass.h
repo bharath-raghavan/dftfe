@@ -57,7 +57,9 @@ namespace dftfe
   private:
     // pointers to dft class and optimization classes
     std::unique_ptr<dftfeWrapper> d_dftfeWrapper;
-	
+    dftBase                      *d_dftPtr;
+    dftParameters                *d_dftParamsPtr;
+		
     const std::string d_restartFilesPath;
     const dftfe::Int  d_verbosity;
     // status parameters

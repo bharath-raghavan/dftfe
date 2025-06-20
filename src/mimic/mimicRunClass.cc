@@ -59,6 +59,9 @@ namespace dftfe
                                                     d_restartFilesPath,
                                                     d_verbosity,
                                                     useDevice);
+													
+	d_dftPtr       = d_dftfeWrapper->getDftfeBasePtr();
+	d_dftParamsPtr = d_dftfeWrapper->getDftfeParamsPtr();
   }
 
 
@@ -68,7 +71,6 @@ namespace dftfe
   {
     bool                             isLastStep = false;
     mimicCommunicator mimic_Communicator{};
-    mimic_Communicator.setPtr(d_dftfeWrapper->getDftfeBasePtr(), d_dftfeWrapper->getDftfeParamsPtr());
     pcout << "Starting client" << std::endl;
     while (!isLastStep)
     {
@@ -82,7 +84,7 @@ namespace dftfe
         }
         else if (request == MCL_SEND_CLIENT_ID)
         {
-             mimic_Communicator.sendValue(mimicValue::ID);
+             mimic_Communicator.sendInt(MCL_GetProgramID());
         }
         else if (request == MCL_SEND_CLIENT_NAME)
         {
@@ -90,15 +92,15 @@ namespace dftfe
         }
         else if (request == MCL_SEND_CLIENT_RUNTYPE)
         {
-             mimic_Communicator.sendValue(mimicValue::RunType);
+             mimic_Communicator.sendInt(MCL_RUNTYPE_QM_PW);
         }
 		else if (request == MCL_SEND_NUM_PARTICLES)
         {
-            mimic_Communicator.sendValue(mimicValue::NAtoms);
+            mimic_Communicator.sendInt((int) d_dftParamsPtr->natoms);
         }
 		else if (request == MCL_SEND_NUM_PARTICLE_SPECIES)
         {
-            mimic_Communicator.sendValue(mimicValue::NAtomTypes);
+            mimic_Communicator.sendInt((int) d_dftParamsPtr->natomTypes);
         }
 		
 		
