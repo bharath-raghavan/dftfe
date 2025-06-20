@@ -76,8 +76,8 @@ namespace dftfe
     {
         int request = -1;
         request =  mimic_Communicator.getRequest();
-	MPI_Bcast(&request, sizeof(int), MPI_BYTE, 0, d_mpiCommParent);
-	std::cout << "MiMiC command name: " << MCL_GetRequestName(request) << " and number: " << request << std::endl;
+        MPI_Bcast(&request, sizeof(int), MPI_BYTE, 0, d_mpiCommParent);
+        std::cout << "MiMiC command name: " << MCL_GetRequestName(request) << " and number: " << request << std::endl;
         if (request == MCL_EXIT)
         {
             isLastStep = true;
