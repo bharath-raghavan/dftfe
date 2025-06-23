@@ -96,17 +96,20 @@ namespace dftfe
         }
 		else if (request == MCL_SEND_NUM_PARTICLES)
         {
-            mimic_Communicator.sendInt((int) d_dftParamsPtr->natoms);
+            mimic_Communicator.sendInt(d_dftParamsPtr->natoms);
         }
 		else if (request == MCL_SEND_NUM_PARTICLE_SPECIES)
         {
-            mimic_Communicator.sendInt((int) d_dftParamsPtr->natomTypes);
+            mimic_Communicator.sendInt(d_dftParamsPtr->natomTypes);
         }
 		else if (request == MCL_SEND_SPECIES_ELEMENTS)
         {
-            mimic_Communicator.sendVec(d_dftfeWrapper->getAtomicNumbers());
+            mimic_Communicator.sendSet(d_dftPtr->getAtomTypes()); //d_dftfeWrapper->getAtomicNumbers()
         }
-		
+		else if (request == MCL_SEND_SPECIES_MASSES)
+        {
+            mimic_Communicator.sendSet(d_dftPtr->getAtomTypes()); // TODO: send massess, not elements
+        }
 		
 	}
     

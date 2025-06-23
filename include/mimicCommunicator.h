@@ -38,8 +38,10 @@ namespace dftfe
 	    int getRequest();
 
 	    void sendInt(int value);
+		void sendInt(dftfe::uInt value);
 		
-		void sendVec(std::vector<dftfe::Int> value);
+		void sendVec(std::vector<int> value);
+		void sendSet(std::set<dftfe::uInt> value);
 
 	    void sendClientProgramName();
 		
