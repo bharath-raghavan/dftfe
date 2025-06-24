@@ -33,17 +33,29 @@ namespace dftfe
 	    /*! \brief
 	     * Finish communications and disconnect from the server
 	     */
-	    void finalize();
+	    void
+		finalize();
 
-	    int getRequest();
+	    int
+		getRequest();
 
-	    void sendInt(int value);
-		void sendInt(dftfe::uInt value);
+	    void
+		sendInt(int value);
+		void
+		sendInt(dftfe::uInt value);
 		
-		void sendVec(std::vector<int> value);
-		void sendSet(std::set<dftfe::uInt> value);
-
-	    void sendClientProgramName();
+		void
+		sendVec(std::vector<int> value);
+		void
+		sendVec(std::vector<dftfe::uInt> value);
+	    void
+	    sendVec(std::vector<std::string> value);
+		
+		void
+		sendSet(std::set<dftfe::uInt> value);
+		
+	    void
+		sendClientProgramName();
 		
 	};
 

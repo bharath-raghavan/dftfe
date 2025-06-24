@@ -62,9 +62,25 @@ namespace dftfe
 													
 	d_dftPtr       = d_dftfeWrapper->getDftfeBasePtr();
 	d_dftParamsPtr = d_dftfeWrapper->getDftfeParamsPtr();
+	
+	populateMassKind();
   }
 
-
+  void
+  mimicRunClass::populateMassKind(){
+  	atomTypes = d_dftPtr->getAtomTypes();
+	
+	std::map<dftfe::uInt, dftfe::uInt> atomTypesMassesUnorder;
+	std::map<dftfe::uInt, std::string> atomKindsUnorder;
+	
+	dftUtils::readMassKindFile(atomTypesMassesUnorder, atomKindsUnorder, "ATOMIC MASSES FILE");
+	
+	// reorder according to atomTypes
+	for (const auto& at : atomTypes) {
+		atomMasses.push_back(atomTypesMassesUnorder[at]);
+		atomKinds.push_back(atomKindsUnorder[at]);
+	}
+  }
 
   void
   mimicRunClass::runClient()
@@ -104,13 +120,16 @@ namespace dftfe
         }
 		else if (request == MCL_SEND_SPECIES_ELEMENTS)
         {
-            mimic_Communicator.sendSet(d_dftPtr->getAtomTypes()); //d_dftfeWrapper->getAtomicNumbers()
+            mimic_Communicator.sendSet(atomTypes); //d_dftfeWrapper->getAtomicNumbers()
         }
 		else if (request == MCL_SEND_SPECIES_MASSES)
         {
-            mimic_Communicator.sendSet(d_dftPtr->getAtomTypes()); // TODO: send massess, not elements
+            mimic_Communicator.sendVec(atomMasses);
         }
-		
+		else if (request == MCL_SEND_SPECIES_LABELS)
+        {
+            mimic_Communicator.sendVec(atomKinds);
+        }
 	}
     
   }

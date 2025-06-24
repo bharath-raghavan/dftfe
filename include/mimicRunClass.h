@@ -55,11 +55,18 @@ namespace dftfe
     runClient();
 
   private:
+    void
+	populateMassKind();
+  
     // pointers to dft class and optimization classes
     std::unique_ptr<dftfeWrapper> d_dftfeWrapper;
     dftBase                      *d_dftPtr;
     dftParameters                *d_dftParamsPtr;
-		
+	
+	std::set<dftfe::uInt> atomTypes;
+	std::vector<dftfe::uInt> atomMasses;
+	std::vector<std::string> atomKinds;
+	
     const std::string d_restartFilesPath;
     const dftfe::Int  d_verbosity;
     // status parameters

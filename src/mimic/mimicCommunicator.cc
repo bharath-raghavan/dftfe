@@ -81,6 +81,24 @@ namespace dftfe
   }
   
   void
+  mimicCommunicator::sendVec(std::vector<dftfe::uInt> value) {
+  	  std::vector<int> value_(value.begin(), value.end());
+      MCL_Send(value_.data(), value_.size(), MCL_DATA, 0);
+  }
+  
+  void
+  mimicCommunicator::sendVec(std::vector<std::string> value) {
+  	  std::string  value_;
+      
+	  for (auto v : value)
+	          value_ += v + std::string(",");
+
+	  int length = value_.length();
+	  MCL_Send(&length, 1, MCL_LENGTH, 0);
+	  MCL_Send(value_.data(), length, MCL_DATA, 0);
+  }
+  
+  void
   mimicCommunicator::sendSet(std::set<dftfe::uInt> value) {
 	  std::vector<int> value_(value.begin(), value.end());
 	  sendVec(value_);
