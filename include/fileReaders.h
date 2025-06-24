@@ -24,6 +24,7 @@
 #define fileReaders_H_
 #include <string>
 #include <vector>
+#include <map>
 #include <mpi.h>
 #include <TypeConfig.h>
 
@@ -81,7 +82,15 @@ namespace dftfe
     void
     writeDataIntoFile(const std::vector<std::vector<double>> &data,
                       const std::string                      &fileName);
-
+	
+    /**
+    * @brief Read from file containing atom type, mass and kind for MiMiC.
+    */
+    void
+    readMassKindFile(std::map<dftfe::uInt, dftfe::uInt> &massdata,
+  			 std::map<dftfe::uInt, std::string> &kinddata,
+             const std::string                &fileName);
+	
     /**
      * @brief Read from file containing only integer data in columns.
      */

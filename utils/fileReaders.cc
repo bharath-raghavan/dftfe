@@ -168,7 +168,45 @@ namespace dftfe
       readFile.close();
       return 1;
     }
+	
+    void
+    readMassKindFile(std::map<dftfe::uInt, dftfe::uInt> &massdata,
+			 std::map<dftfe::uInt, std::string> &kinddata,
+             const std::string                &fileName)
+    {
+      std::ifstream       readFile(fileName.c_str());
+      if (readFile.fail())
+        {
+          std::cerr << "Error opening file: " << fileName.c_str() << std::endl;
+          exit(-1);
+        }
 
+      //
+      // String to store line and word
+      //
+      std::string readLine;
+      std::string elem, mass, kind;
+
+      //
+      // column index
+      //
+      dftfe::Int columnCount;
+
+      if (readFile.is_open())
+        {
+          while (std::getline(readFile, readLine))
+            {
+              std::istringstream iss(readLine);
+
+			  iss >> elem >> mass >> kind;
+
+              massdata.insert({atoi(elem.c_str()), atoi(mass.c_str())});
+              kinddata.insert({atoi(elem.c_str()), kind.c_str()});
+            }
+        }
+      readFile.close();
+    }
+	
     void
     readRelaxationFlagsFile(const dftfe::uInt                     numColumns,
                             std::vector<std::vector<dftfe::Int>> &data,
