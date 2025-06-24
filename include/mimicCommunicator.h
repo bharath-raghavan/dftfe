@@ -47,9 +47,14 @@ namespace dftfe
 		void
 		sendVec(std::vector<int> value);
 		void
+		sendVec(std::vector<double> value);
+		void
 		sendVec(std::vector<dftfe::uInt> value);
 	    void
 	    sendVec(std::vector<std::string> value);
+		
+	    void
+	   send2DVec(std::vector<std::vector<double>> value);
 		
 		void
 		sendSet(std::set<dftfe::uInt> value);

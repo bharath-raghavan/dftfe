@@ -64,6 +64,10 @@ namespace dftfe
 	d_dftParamsPtr = d_dftfeWrapper->getDftfeParamsPtr();
 	
 	populateMassKind();
+	
+	std::vector<std::vector<double>> d_mm_origin;
+	dftUtils::readFile(3, d_mm_origin, "MM BOX ORIGIN");
+	mm_origin = d_mm_origin[0];
   }
 
   void
@@ -129,6 +133,33 @@ namespace dftfe
 		else if (request == MCL_SEND_SPECIES_LABELS)
         {
             mimic_Communicator.sendVec(atomKinds);
+        }
+		else if (request == MCL_SEND_NUM_CONSTR_BONDS)
+        {
+            mimic_Communicator.sendInt(0); // replace with num of constraints
+        }
+		else if (request == MCL_SEND_NUM_CONSTR_ANGLES)
+        {
+            mimic_Communicator.sendInt(0); // replace with num of constraints
+        }
+		else if (request == MCL_SEND_BOX_VECTORS)
+        {
+            mimic_Communicator.send2DVec(d_dftfeWrapper->getCell());
+        }
+		else if (request == MCL_SEND_BOX_NUM_GRIDPOINTS)
+        {
+            mimic_Communicator.sendInt(10); // dummy number
+        }
+		else if (request == MCL_SEND_BOX_ORIGIN)
+        {
+            mimic_Communicator.sendVec(mm_origin); // check if this is correct
+        }
+		else if (request == MCL_SEND_BOX_GRIDPOINT_COORDS)
+        {	
+			std::vector<double> dummy_grid_pts;
+	  	  	for (int i = 0; i < (3*10); i++)
+	  	    	dummy_grid_pts.push_back((double)i);
+            mimic_Communicator.sendVec(dummy_grid_pts); // dummy number
         }
 	}
     

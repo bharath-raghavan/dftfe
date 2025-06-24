@@ -81,6 +81,11 @@ namespace dftfe
   }
   
   void
+  mimicCommunicator::sendVec(std::vector<double> value) {
+      MCL_Send(value.data(), value.size(), MCL_DATA, 0);
+  }
+  
+  void
   mimicCommunicator::sendVec(std::vector<dftfe::uInt> value) {
   	  std::vector<int> value_(value.begin(), value.end());
       MCL_Send(value_.data(), value_.size(), MCL_DATA, 0);
@@ -96,6 +101,16 @@ namespace dftfe
 	  int length = value_.length();
 	  MCL_Send(&length, 1, MCL_LENGTH, 0);
 	  MCL_Send(value_.data(), length, MCL_DATA, 0);
+  }
+  
+  void
+  mimicCommunicator::send2DVec(std::vector<std::vector<double>> value) {	  
+	  std::vector<double> value_;
+	  for (int i = 0; i < value.size(); i++)
+	     for (int j = 0; j < value[i].size(); j++)
+	         value_.push_back(static_cast<double>(value[i][j]));
+	   
+	  sendVec(value_);
   }
   
   void

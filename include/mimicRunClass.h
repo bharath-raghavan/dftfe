@@ -63,9 +63,11 @@ namespace dftfe
     dftBase                      *d_dftPtr;
     dftParameters                *d_dftParamsPtr;
 	
+	// extra MiMiC parameters
 	std::set<dftfe::uInt> atomTypes;
 	std::vector<dftfe::uInt> atomMasses;
 	std::vector<std::string> atomKinds;
+	std::vector<double> mm_origin;
 	
     const std::string d_restartFilesPath;
     const dftfe::Int  d_verbosity;
