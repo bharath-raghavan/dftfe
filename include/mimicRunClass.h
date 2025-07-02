@@ -67,6 +67,7 @@ namespace dftfe
 	std::set<dftfe::uInt> atomTypes;
 	std::vector<dftfe::uInt> atomMasses;
 	std::vector<std::string> atomKinds;
+	std::vector<dftfe::uInt> atomKindIDs;
 	std::vector<double> mm_origin;
 	
     const std::string d_restartFilesPath;

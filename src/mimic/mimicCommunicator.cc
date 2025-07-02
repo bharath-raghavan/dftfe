@@ -92,12 +92,18 @@ namespace dftfe
   }
   
   void
+  mimicCommunicator::sendVec(std::vector<dftfe::Int> value) {
+  	  std::vector<int> value_(value.begin(), value.end());
+      MCL_Send(value_.data(), value_.size(), MCL_DATA, 0);
+  }
+  
+  void
   mimicCommunicator::sendVec(std::vector<std::string> value) {
   	  std::string  value_;
       
 	  for (auto v : value)
 	          value_ += v + std::string(",");
-
+	  value_.pop_back();
 	  int length = value_.length();
 	  MCL_Send(&length, 1, MCL_LENGTH, 0);
 	  MCL_Send(value_.data(), length, MCL_DATA, 0);
@@ -126,6 +132,16 @@ namespace dftfe
       int length = client_name.length();
       MCL_Send(&length, 1, MCL_LENGTH, 0);
       MCL_Send(client_name.data(), length, MCL_DATA, 0);
+  }
+  
+  void
+  mimicCommunicator::sendPos(std::vector<std::vector<double>> atomLoc, std::vector<double> mm_origin) {	  
+	  std::vector<double> pos;
+	  for (int i = 0; i < atomLoc.size(); i++)
+	     for (int j = 0; j < 3; j++)
+	         pos.push_back(atomLoc[i][j+2] + mm_origin[j]);
+	  
+	  sendVec(pos);
   }
   
 

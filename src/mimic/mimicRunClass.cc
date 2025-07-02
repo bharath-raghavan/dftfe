@@ -66,7 +66,7 @@ namespace dftfe
 	populateMassKind();
 	
 	std::vector<std::vector<double>> d_mm_origin;
-	dftUtils::readFile(3, d_mm_origin, "MM BOX ORIGIN");
+	dftUtils::readFile(3, d_mm_origin, "MM BOX ORIGIN"); // TODO: read filename from params
 	mm_origin = d_mm_origin[0];
   }
 
@@ -76,14 +76,22 @@ namespace dftfe
 	
 	std::map<dftfe::uInt, dftfe::uInt> atomTypesMassesUnorder;
 	std::map<dftfe::uInt, std::string> atomKindsUnorder;
+	std::map<dftfe::uInt, dftfe::uInt> atomKindIDMap;
 	
-	dftUtils::readMassKindFile(atomTypesMassesUnorder, atomKindsUnorder, "ATOMIC MASSES FILE");
+	dftUtils::readMassKindFile(atomTypesMassesUnorder, atomKindsUnorder, "ATOMIC MASSES FILE"); // TODO: read filename from params
+	
+	dftfe::uInt i = 1;
 	
 	// reorder according to atomTypes
 	for (const auto& at : atomTypes) {
 		atomMasses.push_back(atomTypesMassesUnorder[at]);
 		atomKinds.push_back(atomKindsUnorder[at]);
+		atomKindIDMap.insert({at, i});
+		i += 1;
 	}
+	
+	for (auto a : d_dftfeWrapper->getAtomicNumbers())
+		atomKindIDs.push_back(atomKindIDMap[a]);
   }
 
   void
@@ -147,19 +155,34 @@ namespace dftfe
             mimic_Communicator.send2DVec(d_dftfeWrapper->getCell());
         }
 		else if (request == MCL_SEND_BOX_NUM_GRIDPOINTS)
-        {
-            mimic_Communicator.sendInt(10); // dummy number
+        {	
+			std::vector<int> dummy_n_grid_pts;
+	  	  	for (int i = 0; i < 3; i++)
+	  	    	dummy_n_grid_pts.push_back(5);
+            mimic_Communicator.sendVec(dummy_n_grid_pts); // TODO: dummy vec
         }
 		else if (request == MCL_SEND_BOX_ORIGIN)
         {
-            mimic_Communicator.sendVec(mm_origin); // check if this is correct
+            mimic_Communicator.sendVec(mm_origin); // TODO: check if this approach is correct
         }
 		else if (request == MCL_SEND_BOX_GRIDPOINT_COORDS)
         {	
 			std::vector<double> dummy_grid_pts;
-	  	  	for (int i = 0; i < (3*10); i++)
-	  	    	dummy_grid_pts.push_back((double)i);
-            mimic_Communicator.sendVec(dummy_grid_pts); // dummy number
+	  	  	for (int i = 0; i < (3*5*5*5); i++)
+	  	    	dummy_grid_pts.push_back(static_cast<double>(0));
+            mimic_Communicator.sendVec(dummy_grid_pts); // TODO: dummy vec
+        }
+		else if (request == MCL_SEND_PARTICLE_SPECIES_IDS)
+        {	
+			 mimic_Communicator.sendVec(atomKindIDs);
+        }
+		else if (request == MCL_SEND_NUCLEAR_CHARGES)
+        {
+            mimic_Communicator.sendVec(atomKinds); // TODO: replace with actual value
+        }
+		else if (request == MCL_SEND_PARTICLE_POSITIONS)
+        {
+            mimic_Communicator.sendPos(d_dftPtr->getAtomLocationsCart(), mm_origin); // TODO: shift by mm_origin
         }
 	}
     

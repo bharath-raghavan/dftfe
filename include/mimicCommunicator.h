@@ -50,17 +50,22 @@ namespace dftfe
 		sendVec(std::vector<double> value);
 		void
 		sendVec(std::vector<dftfe::uInt> value);
+		void
+		sendVec(std::vector<dftfe::Int> value);
 	    void
 	    sendVec(std::vector<std::string> value);
 		
 	    void
-	   send2DVec(std::vector<std::vector<double>> value);
+	    send2DVec(std::vector<std::vector<double>> value);
 		
 		void
 		sendSet(std::set<dftfe::uInt> value);
 		
 	    void
 		sendClientProgramName();
+		
+	    void
+	    sendPos(std::vector<std::vector<double>> atomLoc, std::vector<double> mm_origin);
 		
 	};
 
