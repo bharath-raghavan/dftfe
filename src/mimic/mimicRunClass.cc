@@ -132,7 +132,7 @@ namespace dftfe
         }
 		else if (request == MCL_SEND_SPECIES_ELEMENTS)
         {
-            mimic_Communicator.sendSet(atomTypes); //d_dftfeWrapper->getAtomicNumbers()
+            mimic_Communicator.sendSet(atomTypes);
         }
 		else if (request == MCL_SEND_SPECIES_MASSES)
         {
@@ -163,7 +163,7 @@ namespace dftfe
         }
 		else if (request == MCL_SEND_BOX_ORIGIN)
         {
-            mimic_Communicator.sendVec(mm_origin); // TODO: check if this approach is correct
+            mimic_Communicator.sendVec(mm_origin);
         }
 		else if (request == MCL_SEND_BOX_GRIDPOINT_COORDS)
         {	
@@ -182,7 +182,12 @@ namespace dftfe
         }
 		else if (request == MCL_SEND_PARTICLE_POSITIONS)
         {
-            mimic_Communicator.sendPos(d_dftPtr->getAtomLocationsCart(), mm_origin); // TODO: shift by mm_origin
+            mimic_Communicator.sendPos(d_dftPtr->getAtomLocationsCart(), mm_origin);
+        }
+		else if (request == MCL_RECV_PARTICLE_POSITIONS)
+        {
+			if (dealii::Utilities::MPI::this_mpi_process(d_mpiCommParent) == 0)
+				mimic_Communicator.getPos((int) d_dftParamsPtr->natoms);
         }
 	}
     

@@ -144,5 +144,18 @@ namespace dftfe
 	  sendVec(pos);
   }
   
+  void
+  mimicCommunicator::getPos(const int natoms)
+  {
+      std::vector<double> coords(3 * natoms);
+      MCL_Receive(coords.data(), 3 * natoms, MCL_DATA, 0);
+	  std::cout << "Recv pos: " << natoms << std::endl;
+      for (int j = 0; j < natoms; ++j)
+      {
+          std::cout << coords[j * 3] << " " << coords[j * 3 + 1] << " " << coords[j * 3 + 2] << std::endl;
+      }
+  }
+  
+  
 
 } // namespace dftfe

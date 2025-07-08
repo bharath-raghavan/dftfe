@@ -67,6 +67,9 @@ namespace dftfe
 	    void
 	    sendPos(std::vector<std::vector<double>> atomLoc, std::vector<double> mm_origin);
 		
+		void
+		getPos(const int natoms);
+		
 	};
 
 } // namespace dftfe
