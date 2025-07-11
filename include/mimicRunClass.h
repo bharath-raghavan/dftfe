@@ -19,6 +19,7 @@
 
 #ifndef mimicRunClass_H_
 #define mimicRunClass_H_
+#include <fstream>
 #include "constants.h"
 #include "headers.h"
 #include "dftBase.h"
@@ -83,6 +84,8 @@ namespace dftfe
 
     // conditional stream object
     dealii::ConditionalOStream pcout;
+	
+	std::ofstream mimic_debug;
   };
 } // namespace dftfe
 #endif

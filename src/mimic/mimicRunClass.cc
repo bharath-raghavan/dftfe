@@ -76,6 +76,8 @@ namespace dftfe
     	 for (int j = 0; j < 3; j++)
          	mmCenterAtomPos.push_back(atomLoc[i][j+2] + mm_origin[j]);
   
+	// mimic debug file
+    mimic_debug.open("MIMIC_DEBUG");
   }
 
   void
@@ -119,7 +121,8 @@ namespace dftfe
 			mmCenterAtomPos[i * 3 + 1] = newPos[i * 3 + 1];
 			mmCenterAtomPos[i * 3 + 2] = newPos[i * 3 + 2];
 			
-			std::cout << globalAtomsDisplacements[i][0] << " " << globalAtomsDisplacements[i][1] << " " << globalAtomsDisplacements[i][2] << std::endl;
+			if (dealii::Utilities::MPI::this_mpi_process(d_mpiCommParent) == 0)
+				mimic_debug << globalAtomsDisplacements[i][0] << " " << globalAtomsDisplacements[i][1] << " " << globalAtomsDisplacements[i][2] << std::endl;
 	  }
 	  
 	  double factor = 2.00; // doesn't matter, legacy, any number
@@ -142,8 +145,11 @@ namespace dftfe
         int request = -1;
         request =  mimic_Communicator.getRequest();
         MPI_Bcast(&request, sizeof(int), MPI_BYTE, 0, d_mpiCommParent);
-        std::cout << "MiMiC command name: " << MCL_GetRequestName(request) << " and number: " << request << std::endl;
-        if (request == MCL_EXIT)
+		
+		if (dealii::Utilities::MPI::this_mpi_process(d_mpiCommParent) == 0)
+        	mimic_debug << "MiMiC command name: " << MCL_GetRequestName(request) << " and number: " << request << std::endl;
+        
+		if (request == MCL_EXIT)
         {
             isLastStep = true;
         }
