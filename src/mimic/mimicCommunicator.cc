@@ -135,25 +135,18 @@ namespace dftfe
   }
   
   void
-  mimicCommunicator::sendPos(std::vector<std::vector<double>> atomLoc, std::vector<double> mm_origin) {	  
-	  std::vector<double> pos;
-	  for (int i = 0; i < atomLoc.size(); i++)
-	     for (int j = 0; j < 3; j++)
-	         pos.push_back(atomLoc[i][j+2] + mm_origin[j]);
-	  
-	  sendVec(pos);
-  }
-  
-  void
-  mimicCommunicator::getPos(const int natoms)
+  mimicCommunicator::getVec(std::vector<double> &value, const int length, const MPI_Comm  &mpi_comm_parent)
   {
-      std::vector<double> coords(3 * natoms);
-      MCL_Receive(coords.data(), 3 * natoms, MCL_DATA, 0);
-	  std::cout << "Recv pos: " << natoms << std::endl;
-      for (int j = 0; j < natoms; ++j)
-      {
-          std::cout << coords[j * 3] << " " << coords[j * 3 + 1] << " " << coords[j * 3 + 2] << std::endl;
-      }
+      // recieve value on rank 0
+	  if (dealii::Utilities::MPI::this_mpi_process(mpi_comm_parent) == 0)
+	  	MCL_Receive(value.data(), length, MCL_DATA, 0);
+	
+	  // allocate space for value on other ranks
+	  if (dealii::Utilities::MPI::this_mpi_process(mpi_comm_parent) != 0)
+	  	value.resize(length);
+	  
+	  // broadcast value 
+	  MPI_Bcast(&value[0], value.size(), MPI_DOUBLE, 0, mpi_comm_parent);
   }
   
   

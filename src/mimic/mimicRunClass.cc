@@ -68,6 +68,14 @@ namespace dftfe
 	std::vector<std::vector<double>> d_mm_origin;
 	dftUtils::readFile(3, d_mm_origin, "MM BOX ORIGIN"); // TODO: read filename from params
 	mm_origin = d_mm_origin[0];
+	
+	// init currentAtomPos
+	auto atomLoc = d_dftPtr->getAtomLocationsCart();
+	
+  	for (int i = 0; i < atomLoc.size(); i++)
+    	 for (int j = 0; j < 3; j++)
+         	mmCenterAtomPos.push_back(atomLoc[i][j+2] + mm_origin[j]);
+  
   }
 
   void
@@ -92,6 +100,35 @@ namespace dftfe
 	
 	for (auto a : d_dftfeWrapper->getAtomicNumbers())
 		atomKindIDs.push_back(atomKindIDMap[a]);
+  }
+  
+  void
+  mimicRunClass::updateAtomPositions(std::vector<double> newPos){
+  
+	  std::vector<dealii::Tensor<1, 3, double>> globalAtomsDisplacements(d_dftParamsPtr->natoms);
+
+	  for (int i = 0; i < d_dftParamsPtr->natoms; ++i)
+	  {	
+	  		// calculate displacement
+		  	globalAtomsDisplacements[i][0] = newPos[i * 3] - mmCenterAtomPos[i * 3];
+			globalAtomsDisplacements[i][1] = newPos[i * 3 + 1] - mmCenterAtomPos[i * 3 + 1];
+			globalAtomsDisplacements[i][2] = newPos[i * 3 + 2] - mmCenterAtomPos[i * 3 + 2];
+			
+			// update current positiom
+			mmCenterAtomPos[i * 3] = newPos[i * 3];
+			mmCenterAtomPos[i * 3 + 1] = newPos[i * 3 + 1];
+			mmCenterAtomPos[i * 3 + 2] = newPos[i * 3 + 2];
+			
+			std::cout << globalAtomsDisplacements[i][0] << " " << globalAtomsDisplacements[i][1] << " " << globalAtomsDisplacements[i][2] << std::endl;
+	  }
+	  
+	  double factor = 2.00; // doesn't matter, legacy, any number
+	  bool not_sol_from_prev = true; // do not start from prev wavefunction for now
+	  
+	  d_dftPtr->updateAtomPositionsAndMoveMesh(
+	      globalAtomsDisplacements,
+	      factor,
+	      not_sol_from_prev);
   }
 
   void
@@ -182,12 +219,13 @@ namespace dftfe
         }
 		else if (request == MCL_SEND_PARTICLE_POSITIONS)
         {
-            mimic_Communicator.sendPos(d_dftPtr->getAtomLocationsCart(), mm_origin);
+            mimic_Communicator.sendVec(curretAtomPos);
         }
 		else if (request == MCL_RECV_PARTICLE_POSITIONS)
         {
-			if (dealii::Utilities::MPI::this_mpi_process(d_mpiCommParent) == 0)
-				mimic_Communicator.getPos((int) d_dftParamsPtr->natoms);
+			std::vector<double> coords(3 * d_dftParamsPtr->natoms);
+		    mimic_Communicator.getVec(coords, 3 * (int) d_dftParamsPtr->natoms, d_mpiCommParent);
+			updateAtomPositions(coords);
         }
 	}
     

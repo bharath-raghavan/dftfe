@@ -64,11 +64,8 @@ namespace dftfe
 	    void
 		sendClientProgramName();
 		
-	    void
-	    sendPos(std::vector<std::vector<double>> atomLoc, std::vector<double> mm_origin);
-		
 		void
-		getPos(const int natoms);
+		getVec(std::vector<double> &coords, const int length, const MPI_Comm  &mpi_comm_parent);
 		
 	};
 

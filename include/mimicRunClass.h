@@ -57,6 +57,9 @@ namespace dftfe
   private:
     void
 	populateMassKind();
+	
+    void
+    updateAtomPositions(std::vector<double> flat_coords);
   
     // pointers to dft class and optimization classes
     std::unique_ptr<dftfeWrapper> d_dftfeWrapper;
@@ -69,6 +72,7 @@ namespace dftfe
 	std::vector<std::string> atomKinds;
 	std::vector<dftfe::uInt> atomKindIDs;
 	std::vector<double> mm_origin;
+	std::vector<double> mmCentertAtomPos; // positions centered in MM box as a flattened list
 	
     const std::string d_restartFilesPath;
     const dftfe::Int  d_verbosity;
