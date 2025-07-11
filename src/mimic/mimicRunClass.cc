@@ -219,13 +219,21 @@ namespace dftfe
         }
 		else if (request == MCL_SEND_PARTICLE_POSITIONS)
         {
-            mimic_Communicator.sendVec(curretAtomPos);
+            mimic_Communicator.sendVec(mmCenterAtomPos);
+        }
+		else if (request == MCL_SEND_PARTICLE_FORCES)
+        {
+            mimic_Communicator.send2DVec(d_dftfeWrapper->getForcesAtoms());
         }
 		else if (request == MCL_RECV_PARTICLE_POSITIONS)
         {
 			std::vector<double> coords(3 * d_dftParamsPtr->natoms);
 		    mimic_Communicator.getVec(coords, 3 * (int) d_dftParamsPtr->natoms, d_mpiCommParent);
 			updateAtomPositions(coords);
+        } 
+		else if (request == MCL_COMPUTE_FORCES)
+        {
+			d_dftPtr->solve(true, true, false);
         }
 	}
     

@@ -72,7 +72,7 @@ namespace dftfe
 	std::vector<std::string> atomKinds;
 	std::vector<dftfe::uInt> atomKindIDs;
 	std::vector<double> mm_origin;
-	std::vector<double> mmCentertAtomPos; // positions centered in MM box as a flattened list
+	std::vector<double> mmCenterAtomPos; // positions centered in MM box as a flattened list
 	
     const std::string d_restartFilesPath;
     const dftfe::Int  d_verbosity;
